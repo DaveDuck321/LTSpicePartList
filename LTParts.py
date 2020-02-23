@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+from collections import defaultdict
 
 def exit_msg(code, *lines):
     for line in lines:
@@ -8,17 +9,31 @@ def exit_msg(code, *lines):
     exit(code)
 
 def print_parts(parts):
-    pass
+    parts = sorted(zip(parts.values(), parts.keys()), reverse=True)
+    
+    for (count, (name, value)) in parts:
+        print(f"COMPONENT: {name} {value}")
+        print(f"   Count {count}")
 
 def append_parts(parts, file):
-    pass
+    current_symbol = None
+
+    for line in file.readlines():
+        command = line.split(' ')
+        if command[0] == 'SYMBOL':
+            if current_symbol:
+                parts[current_symbol] += 1
+            current_symbol = (command[1], '')
+        if command[0] == 'SYMATTR':
+            if command[1] == 'Value':
+                current_symbol = (current_symbol[0], command[2].strip())
 
 if __name__ == '__main__':
     args = sys.argv[1:]
     if len(args) != 1:
         exit_msg(1, "Error: Incorrect usage", "Please use: LTParts file.asc")
 
-    parts = {}
+    parts = defaultdict(int)
     try:
         for file in args:
             append_parts(parts, open(args[0], 'r'))
