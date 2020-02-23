@@ -9,11 +9,24 @@ def exit_msg(code, *lines):
     exit(code)
 
 def print_parts(parts):
-    parts = sorted(zip(parts.values(), parts.keys()), reverse=True)
-    
+    parts = list(sorted(zip(parts.values(), parts.keys()), reverse=True))
+    longest_name = max(map(
+        lambda part: len(part[1][0]),
+        parts
+    ))
+
+    longest_value = max(map(
+        lambda part: len(part[1][1]),
+        parts
+    ))
+
+    row = f"| {{:<{longest_name}}} | {{:<{longest_value}}} | {{:<5}} |"
+
+    print(row.format("Name", "Value", "Count"))
+    print("-" * len(row.format("", "", "")))
+
     for (count, (name, value)) in parts:
-        print(f"COMPONENT: {name} {value}")
-        print(f"   Count {count}")
+        print(row.format(name, value, count))
 
 def append_parts(parts, file):
     current_symbol = None
